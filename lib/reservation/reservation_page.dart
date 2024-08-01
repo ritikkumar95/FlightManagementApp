@@ -4,6 +4,8 @@ import 'package:path/path.dart';
 import 'reservation.dart';
 import 'add_reservation_page.dart';
 
+//reservation.dart class
+
 class ReservationPage extends StatefulWidget {
   @override
   _ReservationPageState createState() => _ReservationPageState();

@@ -3,25 +3,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'customer_database_helper.dart';
 
+// Page for adding a new customer
 class AddCustomerPage extends StatefulWidget {
   @override
   _AddCustomerPageState createState() => _AddCustomerPageState();
 }
 
 class _AddCustomerPageState extends State<AddCustomerPage> {
+  // Controllers for input fields
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _addressController = TextEditingController();
   final _birthdayController = TextEditingController();
+
   late SharedPreferences _prefs;
   final _databaseHelper = CustomerDatabaseHelper.instance;
 
   @override
   void initState() {
     super.initState();
-    _loadPreviousCustomer();
+    _loadPreviousCustomer(); // Load previous customer data if available
   }
 
+  // Load previous customer data from shared preferences
   Future<void> _loadPreviousCustomer() async {
     _prefs = await SharedPreferences.getInstance();
     final encryptedPreviousCustomer = _prefs.getString('previousCustomer');
@@ -37,6 +41,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     }
   }
 
+  // Encrypt data using AES encryption
   String _encrypt(String value) {
     final key = encrypt.Key.fromLength(32);
     final iv = encrypt.IV.fromLength(16);
@@ -45,6 +50,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     return encrypted.base64;
   }
 
+  // Decrypt data using AES encryption
   String _decrypt(String encryptedValue) {
     final key = encrypt.Key.fromLength(32);
     final iv = encrypt.IV.fromLength(16);
@@ -53,6 +59,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     return decrypted;
   }
 
+  // Add customer to the database and save data to shared preferences
   Future<void> _addCustomer() async {
     try {
       final firstName = _firstNameController.text;
@@ -73,7 +80,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
         final id = await _databaseHelper.insertCustomer(customer);
 
-        Navigator.of(context).pop(customer);
+        Navigator.of(context).pop(customer); // Return to the previous screen with the added customer
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('All fields must be filled out!')),
@@ -87,6 +94,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     }
   }
 
+  // Clear all input fields
   void _clearFields() {
     setState(() {
       _firstNameController.clear();
@@ -106,18 +114,22 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            // Input field for first name
             TextField(
               controller: _firstNameController,
               decoration: InputDecoration(labelText: 'First Name'),
             ),
+            // Input field for last name
             TextField(
               controller: _lastNameController,
               decoration: InputDecoration(labelText: 'Last Name'),
             ),
+            // Input field for address
             TextField(
               controller: _addressController,
               decoration: InputDecoration(labelText: 'Address'),
             ),
+            // Input field for birthday
             TextField(
               controller: _birthdayController,
               decoration: InputDecoration(labelText: 'Birthday'),
@@ -125,10 +137,12 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                // Button to submit the form and add a customer
                 ElevatedButton(
                   onPressed: _addCustomer,
                   child: Text('Submit'),
                 ),
+                // Button to clear all input fields
                 ElevatedButton(
                   onPressed: _clearFields,
                   child: Text('Clear'),

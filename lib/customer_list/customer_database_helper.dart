@@ -1,34 +1,39 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-
+// Helper class for managing the customer database
 class CustomerDatabaseHelper {
-  static final _databaseName = "CustomerDatabase.db";
-  static final _databaseVersion = 1;
-  static final table = 'customer';
+  static final _databaseName = "CustomerDatabase.db"; // Name of the database
+  static final _databaseVersion = 1; // Version of the database
+  static final table = 'customer'; // Table name
 
+  // Column names
   static final columnId = '_id';
   static final columnFirstName = 'firstName';
   static final columnLastName = 'lastName';
   static final columnAddress = 'address';
   static final columnBirthday = 'birthday';
 
+  // Singleton pattern implementation
   CustomerDatabaseHelper._privateConstructor();
   static final CustomerDatabaseHelper instance = CustomerDatabaseHelper._privateConstructor();
 
   static Database? _database;
 
+  // Get a reference to the database
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
+  // Initialize the database
   _initDatabase() async {
     String path = join(await getDatabasesPath(), _databaseName);
     return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
   }
 
+  // Create the customer table
   Future _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $table (
@@ -41,16 +46,19 @@ class CustomerDatabaseHelper {
     ''');
   }
 
+  // Insert a customer into the database
   Future<int> insertCustomer(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(table, row);
   }
 
+  // Retrieve all customers from the database
   Future<List<Map<String, dynamic>>> getAllCustomers() async {
     Database db = await instance.database;
     return await db.query(table);
   }
 
+  // Update a customer in the database
   Future<int> updateCustomer(Map<String, dynamic> row) async {
     Database db = await instance.database;
     if (row[columnId] == null) {
@@ -60,6 +68,7 @@ class CustomerDatabaseHelper {
     return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
   }
 
+  // Delete a customer from the database
   Future<int> deleteCustomer(int id) async {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);

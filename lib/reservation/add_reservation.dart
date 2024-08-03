@@ -1,102 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // For date formatting
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import 'customer_database_helper.dart';
 
-// Page for adding a new reservation
 class AddReservationPage extends StatefulWidget {
   @override
   _AddReservationPageState createState() => _AddReservationPageState();
 }
 
 class _AddReservationPageState extends State<AddReservationPage> {
-  final _reservationNameController = TextEditingController();
-  final _flightController = TextEditingController();
-
-  List<Map<String, dynamic>> _customers = [];
-  Map<String, dynamic>? _selectedCustomer;
-
-  final _databaseHelper = CustomerDatabaseHelper.instance;
-  late SharedPreferences _prefs;
+  final _nameController = TextEditingController();
+  String? _selectedCustomer; // Use nullable type
+  String? _selectedFlight; // Use nullable type
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _loadCustomers();
-    _loadPreviousCustomer();
+    // Load preferences or default values
   }
 
-  // Load customers from the database
-  Future<void> _loadCustomers() async {
-    final customers = await _databaseHelper.getAllCustomers();
+  void _saveReservation() async {
+    // Save reservation to database
+    // For demonstration purposes, we're just printing to the console
+    print('Saving Reservation');
+    print('Customer: $_selectedCustomer');
+    print('Flight: $_selectedFlight');
+    print('Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}');
+    print('Name: ${_nameController.text}');
+
+    // Navigate back to the list page
+    Navigator.pop(context);
+  }
+
+  void _selectDate() async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    ) ?? _selectedDate;
+
     setState(() {
-      _customers = customers;
+      _selectedDate = picked;
     });
-  }
-
-  // Load previous customer data from shared preferences
-  Future<void> _loadPreviousCustomer() async {
-    _prefs = await SharedPreferences.getInstance();
-    final encryptedPreviousCustomer = _prefs.getString('previousCustomer');
-    if (encryptedPreviousCustomer != null) {
-      final decryptedCustomer = _decrypt(encryptedPreviousCustomer);
-      final customerDetails = decryptedCustomer.split('|');
-      setState(() {
-        _selectedCustomer = {
-          'firstName': customerDetails[0],
-          'lastName': customerDetails[1],
-          'address': customerDetails[2],
-          'birthday': customerDetails[3],
-        };
-      });
-    }
-  }
-
-  // Encrypt data using AES encryption
-  String _encrypt(String value) {
-    final key = encrypt.Key.fromLength(32);
-    final iv = encrypt.IV.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
-    final encrypted = encrypter.encrypt(value, iv: iv);
-    return encrypted.base64;
-  }
-
-  // Decrypt data using AES encryption
-  String _decrypt(String encryptedValue) {
-    final key = encrypt.Key.fromLength(32);
-    final iv = encrypt.IV.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
-    final decrypted = encrypter.decrypt64(encryptedValue, iv: iv);
-    return decrypted;
-  }
-
-  // Add reservation to the database
-  Future<void> _addReservation() async {
-    try {
-      final reservationName = _reservationNameController.text;
-      final flight = _flightController.text;
-
-      if (_selectedCustomer != null && reservationName.isNotEmpty && flight.isNotEmpty) {
-        final reservation = {
-          'reservationName': reservationName,
-          'customerId': _selectedCustomer!['_id'],
-          'flight': flight,
-        };
-
-        final id = await _databaseHelper.insertReservation(reservation);
-
-        Navigator.of(context).pop(reservation); // Return to the previous screen with the added reservation
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('All fields must be filled out!')),
-        );
-      }
-    } catch (e) {
-      print('Error while adding reservation: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred while adding the reservation.')),
-      );
-    }
   }
 
   @override
@@ -106,35 +52,52 @@ class _AddReservationPageState extends State<AddReservationPage> {
         title: Text('Add Reservation'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            DropdownButton<Map<String, dynamic>>(
-              hint: Text('Select Customer'),
+            DropdownButton<String>(
               value: _selectedCustomer,
-              onChanged: (value) {
-                setState(() {
-                  _selectedCustomer = value;
-                });
-              },
-              items: _customers.map((customer) {
-                return DropdownMenuItem<Map<String, dynamic>>(
-                  value: customer,
-                  child: Text('${customer['firstName']} ${customer['lastName']}'),
+              hint: Text('Select Customer'),
+              items: <String>['Customer 1', 'Customer 2'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
                 );
               }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedCustomer = newValue;
+                });
+              },
+            ),
+            DropdownButton<String>(
+              value: _selectedFlight,
+              hint: Text('Select Flight'),
+              items: <String>['Flight 1', 'Flight 2'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedFlight = newValue;
+                });
+              },
             ),
             TextField(
-              controller: _reservationNameController,
+              controller: _nameController,
               decoration: InputDecoration(labelText: 'Reservation Name'),
             ),
-            TextField(
-              controller: _flightController,
-              decoration: InputDecoration(labelText: 'Flight'),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: _selectDate,
+              child: Text('Select Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
             ),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _addReservation,
-              child: Text('Add Reservation'),
+              onPressed: _saveReservation,
+              child: Text('Save Reservation'),
             ),
           ],
         ),

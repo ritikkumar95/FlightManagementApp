@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'customer_database_helper.dart';
+import 'package:flight_management_app/customer_list/customer_database_helper.dart';
 
 class ReservationListPage extends StatefulWidget {
   @override

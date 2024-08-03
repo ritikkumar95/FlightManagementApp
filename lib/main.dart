@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         '/customerList': (context) => CustomerListPage(),
         '/airplaneList': (context) => AirplaneListPage(),
         '/flightsList': (context) => FlightsListPage(),
-        '/reservation': (context) => ReservationPage(),
+        '/reservation': (context) => ReservationListPage(),
       },
     );
   }

@@ -1,70 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'reservation.dart';
-import 'add_reservation_page.dart';
+import 'customer_database_helper.dart';
 
-//reservation.dart class
-
-class ReservationPage extends StatefulWidget {
+class ReservationListPage extends StatefulWidget {
   @override
-  _ReservationPageState createState() => _ReservationPageState();
+  _ReservationListPageState createState() => _ReservationListPageState();
 }
 
-class _ReservationPageState extends State<ReservationPage> {
-  List<Reservation> reservations = [];
-  Database? database;
+class _ReservationListPageState extends State<ReservationListPage> {
+  List<Map<String, dynamic>> _reservations = [];
+  final _databaseHelper = CustomerDatabaseHelper.instance;
 
   @override
   void initState() {
     super.initState();
-    _initializeDatabase();
+    _loadReservations();
   }
 
-  void _initializeDatabase() async {
-    database = await openDatabase(
-      join(await getDatabasesPath(), 'flight_management.db'),
-      onCreate: (db, version) {
-        return db.execute(
-          "CREATE TABLE reservations(id INTEGER PRIMARY KEY, name TEXT)",
-        );
-      },
-      version: 1,
-    );
-    _fetchReservations();
-  }
-
-  void _fetchReservations() async {
-    final List<Map<String, dynamic>> maps = await database!.query('reservations');
+  // Load reservations from the database
+  Future<void> _loadReservations() async {
+    final reservations = await _databaseHelper.getAllReservations();
     setState(() {
-      reservations = List.generate(maps.length, (i) {
-        return Reservation(
-          id: maps[i]['id'],
-          name: maps[i]['name'],
-          customerName: maps[i]['customerName'],
-          flightNumber: maps[i]['flightNumber'],
-          departureCity: maps[i]['departureCity'],
-          destinationCity: maps[i]['destinationCity'],
-          departureTime: DateTime.parse(maps[i]['departureTime']),
-          arrivalTime: DateTime.parse(maps[i]['arrivalTime']),
-
-        );
-      });
+      _reservations = reservations;
     });
   }
 
-  void _addReservation(String name) async {
-    await database!.insert(
-      'reservations',
-      {'name': name},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    _fetchReservations();
-  }
-
-  void _showSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(content: Text(message));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  // Delete a reservation from the database
+  Future<void> _deleteReservation(int id) async {
+    await _databaseHelper.deleteReservation(id);
+    _loadReservations(); // Reload reservations after deletion
   }
 
   @override
@@ -72,64 +35,20 @@ class _ReservationPageState extends State<ReservationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Reservations'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.info),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Instructions'),
-                  content: Text('Use the button below to add a new reservation.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('OK'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: reservations.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(reservations[index].name),
-                  onTap: () {
-                    // Show reservation details
-                  },
-                );
-              },
+      body: ListView.builder(
+        itemCount: _reservations.length,
+        itemBuilder: (context, index) {
+          final reservation = _reservations[index];
+          return ListTile(
+            title: Text(reservation['reservationName']),
+            subtitle: Text('Flight: ${reservation['flight']}'),
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _deleteReservation(reservation['_id']),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Reservation Name',
-              ),
-              onSubmitted: (value) {
-                _addReservation(value);
-                _showSnackbar(context, 'Reservation added');
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddReservationPage()),
           );
         },
-        child: Icon(Icons.add),
       ),
     );
   }

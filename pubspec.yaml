@@ -24,7 +24,7 @@ dependencies:
   shared_preferences: ^2.0.6
   floor: ^1.4.0
   floor_generator: ^1.4.0
-
+encrypted_shared_preferences: ^3.0.1
 
 dev_dependencies:
   flutter_test:

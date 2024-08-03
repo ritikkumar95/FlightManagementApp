@@ -3,8 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import '../customer_list/customer_database_helper.dart';
 
-
-// Page for adding a new reservation
 class AddReservationPage extends StatefulWidget {
   @override
   _AddReservationPageState createState() => _AddReservationPageState();
@@ -48,6 +46,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
           'lastName': customerDetails[1],
           'address': customerDetails[2],
           'birthday': customerDetails[3],
+          '_id': int.parse(customerDetails[4]), // Ensure you store the ID as well
         };
       });
     }

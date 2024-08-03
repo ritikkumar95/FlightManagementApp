@@ -16,6 +16,7 @@ environment:
 dependencies:
   flutter_localizations:
     sdk: flutter
+  encrypted_shared_preferences: ^3.0.1
   intl: ^0.18.1
   cupertino_icons: ^1.0.2
   sqflite: ^2.0.0+4
@@ -24,7 +25,7 @@ dependencies:
   shared_preferences: ^2.0.6
   floor: ^1.4.0
   floor_generator: ^1.4.0
-encrypted_shared_preferences: ^3.0.1
+
 
 dev_dependencies:
   flutter_test:

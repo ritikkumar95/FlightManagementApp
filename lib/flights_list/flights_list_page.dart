@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'flight_details.dart';
+import 'flight_detail_page.dart';
 import 'flight.dart';
 import 'database.dart';
 

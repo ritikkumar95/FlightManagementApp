@@ -3,7 +3,7 @@ import 'package:floor/floor.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
 import 'flight.dart';
-import 'flight_dao.dart';
+import 'flightDAO.dart';
 
 part 'database.g.dart';
 

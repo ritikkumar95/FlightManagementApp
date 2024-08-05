@@ -39,7 +39,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   MaterialPageRoute(builder: (context) => AddReservationPage(
                     onAddReservation: (reservation) {
                       setState(() {
-                        reservations.add(reservation);
+                        reservations.add(reservation as Reservation);
                       });
                     },
                   )),

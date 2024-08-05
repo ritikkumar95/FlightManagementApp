@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'customer_database_helper.dart';
+import '../customer_list/customer_database_helper.dart';
+
 
 class AddReservationPage extends StatefulWidget {
   final Function(Map<String, dynamic>) onAddReservation;

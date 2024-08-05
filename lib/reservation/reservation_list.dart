@@ -1,7 +1,7 @@
-import 'package:flight_management_app/reservation/reservation_detail.dart';
 import 'package:flutter/material.dart';
-import 'add_reservation.dart';
-
+import 'package:flight_management_app/reservation/reservation_detail.dart';
+import '../customer_list/customer_database_helper.dart';
+import 'reservation_database_helper.dart';
 
 class ReservationListPage extends StatefulWidget {
   @override
@@ -9,31 +9,34 @@ class ReservationListPage extends StatefulWidget {
 }
 
 class _ReservationListPageState extends State<ReservationListPage> {
-  List<Reservation> reservations = [];
+  final _reservationDatabaseHelper = ReservationDatabaseHelper.instance;
+  final _customerDatabaseHelper = CustomerDatabaseHelper.instance;
+  List<Map<String, dynamic>> reservations = [];
 
-  void _navigateToAddReservation() async {
-    final reservation = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AddReservationPage(
-        onAddReservation: (reservation) {
-          setState(() {
-            reservations.add(reservation as Reservation);
-          });
-        },
-      )),
-    );
-
-    if (reservation != null) {
-      setState(() {
-        reservations.add(reservation as Reservation);
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    _loadReservations();
   }
 
-  void _viewReservationDetails(Reservation reservation) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ReservationDetailsPage(reservation: reservation)),
+  Future<void> _loadReservations() async {
+    final reservationsList = await _reservationDatabaseHelper.getAllReservations();
+    setState(() {
+      reservations = reservationsList;
+    });
+  }
+
+  void _viewReservationDetails(Map<String, dynamic> reservation) async {
+    final customerId = reservation[ReservationDatabaseHelper.columnCustomerIdFk];
+    final customer = await _customerDatabaseHelper.getCustomerById(customerId);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ReservationDetailsPage(
+          reservation: reservation,
+          customer: customer,
+        ),
+      ),
     );
   }
 
@@ -41,44 +44,19 @@ class _ReservationListPageState extends State<ReservationListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reservations'),
+        title: Text('Reservation List'),
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                itemCount: reservations.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(reservations[index].name),
-                    subtitle: Text('${reservations[index].customerName} - ${reservations[index].flightInfo}'),
-                    onTap: () {
-                      _viewReservationDetails(reservations[index]);
-                    },
-                  );
-                },
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _navigateToAddReservation,
-              child: Text('Add Reservation'),
-            ),
-          ],
-        ),
+      body: ListView.builder(
+        itemCount: reservations.length,
+        itemBuilder: (context, index) {
+          final reservation = reservations[index];
+          return ListTile(
+            title: Text(reservation[ReservationDatabaseHelper.columnReservationName]),
+            subtitle: Text('Flight: ${reservation[ReservationDatabaseHelper.columnFlight]}'),
+            onTap: () => _viewReservationDetails(reservation),
+          );
+        },
       ),
     );
   }
-}
-
-class Reservation {
-  final String name;
-  final String customerName;
-  final String flightInfo;
-
-  Reservation({
-    required this.name,
-    required this.customerName,
-    required this.flightInfo,
-  });
 }

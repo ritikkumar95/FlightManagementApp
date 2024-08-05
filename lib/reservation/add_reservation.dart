@@ -1,49 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
-import 'package:shared_preferences/shared_preferences.dart';
+import 'reservation_list_page.dart';
 
 class AddReservationPage extends StatefulWidget {
+  final Function(Reservation) onAddReservation;
+
+  AddReservationPage({required this.onAddReservation});
+
   @override
   _AddReservationPageState createState() => _AddReservationPageState();
 }
 
 class _AddReservationPageState extends State<AddReservationPage> {
-  final _nameController = TextEditingController();
-  String? _selectedCustomer; // Use nullable type
-  String? _selectedFlight; // Use nullable type
-  DateTime _selectedDate = DateTime.now();
+  String reservationName = '';
+  String selectedCustomer = '';
+  String selectedFlight = '';
 
-  @override
-  void initState() {
-    super.initState();
-    // Load preferences or default values
-  }
-
-  void _saveReservation() async {
-    // Save reservation to database
-    // For demonstration purposes, we're just printing to the console
-    print('Saving Reservation');
-    print('Customer: $_selectedCustomer');
-    print('Flight: $_selectedFlight');
-    print('Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}');
-    print('Name: ${_nameController.text}');
-
-    // Navigate back to the list page
-    Navigator.pop(context);
-  }
-
-  void _selectDate() async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    ) ?? _selectedDate;
-
-    setState(() {
-      _selectedDate = picked;
-    });
-  }
+  // Assume these are populated from a database or API
+  List<String> customers = ['John Doe', 'Jane Smith'];
+  List<String> flights = ['AC 456 - Toronto to Vancouver', 'AC 457 - Toronto to Vancouver'];
 
   @override
   Widget build(BuildContext context) {
@@ -52,52 +26,59 @@ class _AddReservationPageState extends State<AddReservationPage> {
         title: Text('Add Reservation'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            DropdownButton<String>(
-              value: _selectedCustomer,
-              hint: Text('Select Customer'),
-              items: <String>['Customer 1', 'Customer 2'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedCustomer = newValue;
-                });
-              },
-            ),
-            DropdownButton<String>(
-              value: _selectedFlight,
-              hint: Text('Select Flight'),
-              items: <String>['Flight 1', 'Flight 2'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedFlight = newValue;
-                });
-              },
-            ),
             TextField(
-              controller: _nameController,
               decoration: InputDecoration(labelText: 'Reservation Name'),
+              onChanged: (value) {
+                setState(() {
+                  reservationName = value;
+                });
+              },
             ),
-            SizedBox(height: 20),
-            TextButton(
-              onPressed: _selectDate,
-              child: Text('Select Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}'),
+            DropdownButton<String>(
+              value: selectedCustomer.isEmpty ? null : selectedCustomer,
+              hint: Text('Select Customer'),
+              items: customers.map((customer) {
+                return DropdownMenuItem<String>(
+                  value: customer,
+                  child: Text(customer),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCustomer = value!;
+                });
+              },
+            ),
+            DropdownButton<String>(
+              value: selectedFlight.isEmpty ? null : selectedFlight,
+              hint: Text('Select Flight'),
+              items: flights.map((flight) {
+                return DropdownMenuItem<String>(
+                  value: flight,
+                  child: Text(flight),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedFlight = value!;
+                });
+              },
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _saveReservation,
-              child: Text('Save Reservation'),
+              onPressed: () {
+                final reservation = Reservation(
+                  name: reservationName,
+                  customerName: selectedCustomer,
+                  flightInfo: selectedFlight,
+                );
+                widget.onAddReservation(reservation);
+                Navigator.pop(context);
+              },
+              child: Text('Add Reservation'),
             ),
           ],
         ),

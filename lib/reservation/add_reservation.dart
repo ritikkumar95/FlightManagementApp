@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import '../customer_list/customer_database_helper.dart';
 import 'reservation_database_helper.dart';
 
@@ -18,7 +16,6 @@ class _AddReservationPageState extends State<AddReservationPage> {
   String selectedCustomer = '';
   String selectedFlight = '';
 
-  late SharedPreferences _prefs;
   final _reservationDatabaseHelper = ReservationDatabaseHelper.instance;
   final _customerDatabaseHelper = CustomerDatabaseHelper.instance;
 
@@ -62,9 +59,6 @@ class _AddReservationPageState extends State<AddReservationPage> {
       'customerId': customerId,
       'flight': selectedFlight,
     };
-
-    // Debugging information
-    print('Adding reservation: $reservation');
 
     await _reservationDatabaseHelper.insertReservation(reservation);
     widget.onAddReservation(reservation);

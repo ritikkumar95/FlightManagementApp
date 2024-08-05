@@ -1,3 +1,5 @@
+import 'package:sqflite/sqflite.dart' as sqflite;
+import 'dart:async';
 class Customer {
   final int id;
   final String firstName;

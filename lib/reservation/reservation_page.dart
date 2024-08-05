@@ -1,32 +1,29 @@
+import 'package:flight_management_app/reservation/reservation.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import '../customer_list/customer.dart';
-import '../customer_list/customer_database_helper.dart';
 import '../flights_list/database.dart';
 import '../flights_list/flight.dart';
-import 'reservation.dart';
 
 
-class ReservationDetailsPage extends StatefulWidget {
+class ReservationPage extends StatefulWidget {
   final Reservation? reservation;
-  final Function? onDelete;
-  final Function? onUpdate;
   final Function? onAdd;
+  final Function? onUpdate;
+  final Function? onDelete;
 
-  ReservationDetailsPage({this.reservation, this.onDelete, this.onUpdate, this.onAdd});
+  ReservationPage({this.reservation, this.onAdd, this.onUpdate, this.onDelete});
 
   @override
-  _ReservationDetailsPageState createState() => _ReservationDetailsPageState();
+  _ReservationPageState createState() => _ReservationPageState();
 }
 
-class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
+class _ReservationPageState extends State<ReservationPage> {
   late AppDatabase database;
-  late CustomerDatabaseHelper customerDatabaseHelper;
-  final _reservationNameController = TextEditingController();
+  final _nameController = TextEditingController();
   Flight? selectedFlight;
   Customer? selectedCustomer;
-  late List<Flight> flights = [];
-  late List<Customer> customers = [];
+  final _reservationDateController = TextEditingController();
   late EncryptedSharedPreferences _encryptedSharedPreferences;
 
   @override
@@ -34,7 +31,12 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     super.initState();
     _initializeDatabase();
     _initializeSharedPreferences();
-    _loadInitialData();
+    if (widget.reservation != null) {
+      _nameController.text = widget.reservation!.name;
+      _reservationDateController.text = widget.reservation!.reservationDate;
+    } else {
+      _loadSavedText();
+    }
   }
 
   Future<void> _initializeDatabase() async {
@@ -45,31 +47,29 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     _encryptedSharedPreferences = EncryptedSharedPreferences();
   }
 
-  Future<void> _loadInitialData() async {
-    final flightDao = database.flightDao;
-    flights = await flightDao.findAllFlights();
+  Future<void> _loadSavedText() async {
+    _nameController.text = await _encryptedSharedPreferences.getString('reservationName') ?? '';
+  }
 
-    customerDatabaseHelper = CustomerDatabaseHelper.instance;
-    final customerMaps = await customerDatabaseHelper.getAllCustomers();
-    customers = customerMaps.map((map) => Customer.fromMap(map)).toList();
-
-    if (widget.reservation != null) {
-      _reservationNameController.text = widget.reservation!.reservationName;
-      selectedFlight = flights.firstWhere((flight) => flight.id == widget.reservation!.flightId);
-      selectedCustomer = customers.firstWhere((customer) => customer.id == widget.reservation!.customerId);
-    }
+  void _saveText(String key, String value) {
+    _encryptedSharedPreferences.setString(key, value);
   }
 
   void _onSubmit() async {
-    if (selectedFlight != null && selectedCustomer != null && _reservationNameController.text.isNotEmpty) {
+    if (_nameController.text.isNotEmpty &&
+        selectedFlight != null &&
+        selectedCustomer != null &&
+        _reservationDateController.text.isNotEmpty) {
       final int? reservationId = widget.reservation?.id;
 
       final reservation = Reservation(
         reservationId,
+        _nameController.text,
         selectedFlight!.id!,
         selectedCustomer!.id!,
-        _reservationNameController.text,
+        _reservationDateController.text,
       );
+
       final reservationDao = database.reservationDao;
       if (widget.reservation != null) {
         await reservationDao.updateReservation(reservation);
@@ -81,7 +81,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a value for all fields')),
+        SnackBar(content: Text('Please fill out all fields')),
       );
     }
   }
@@ -129,40 +129,18 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DropdownButton<Flight>(
-              value: selectedFlight,
-              hint: Text('Select Flight'),
-              items: flights.map((flight) {
-                return DropdownMenuItem<Flight>(
-                  value: flight,
-                  child: Text('${flight.departureCity} ➔ ${flight.destinationCity}'),
-                );
-              }).toList(),
-              onChanged: (flight) {
-                setState(() {
-                  selectedFlight = flight;
-                });
-              },
-            ),
-            DropdownButton<Customer>(
-              value: selectedCustomer,
-              hint: Text('Select Customer'),
-              items: customers.map((customer) {
-                return DropdownMenuItem<Customer>(
-                  value: customer,
-                  child: Text('${customer.firstName} ${customer.lastName}'),
-                );
-              }).toList(),
-              onChanged: (customer) {
-                setState(() {
-                  selectedCustomer = customer;
-                });
-              },
-            ),
             TextField(
-              controller: _reservationNameController,
+              controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Reservation Name',
+              ),
+              onChanged: (text) => _saveText('reservationName', text),
+            ),
+            // You should add widgets for selecting flight and customer.
+            TextField(
+              controller: _reservationDateController,
+              decoration: InputDecoration(
+                labelText: 'Reservation Date',
               ),
             ),
             SizedBox(height: 20),

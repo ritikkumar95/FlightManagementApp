@@ -30,15 +30,20 @@ class CustomerDatabaseHelper {
     return _database!;
   }
 
-  _initDatabase() async {
+  Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), _databaseName);
-    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $customerTable (
-        $columnCustomerId INTEGER PRIMARY KEY,
+        $columnCustomerId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnFirstName TEXT NOT NULL,
         $columnLastName TEXT NOT NULL,
         $columnAddress TEXT NOT NULL,
@@ -47,13 +52,17 @@ class CustomerDatabaseHelper {
     ''');
     await db.execute('''
       CREATE TABLE $reservationTable (
-        $columnReservationId INTEGER PRIMARY KEY,
+        $columnReservationId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnReservationName TEXT NOT NULL,
         $columnCustomerIdFk INTEGER NOT NULL,
         $columnFlight TEXT NOT NULL,
         FOREIGN KEY ($columnCustomerIdFk) REFERENCES $customerTable ($columnCustomerId)
       )
     ''');
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // Handle schema migrations if needed
   }
 
   Future<int> insertCustomer(Map<String, dynamic> row) async {
@@ -66,17 +75,6 @@ class CustomerDatabaseHelper {
     return await db.query(customerTable);
   }
 
-  Future<int> updateCustomer(Map<String, dynamic> row) async {
-    Database db = await instance.database;
-    int id = row[columnCustomerId];
-    return await db.update(customerTable, row, where: '$columnCustomerId = ?', whereArgs: [id]);
-  }
-
-  Future<int> deleteCustomer(int id) async {
-    Database db = await instance.database;
-    return await db.delete(customerTable, where: '$columnCustomerId = ?', whereArgs: [id]);
-  }
-
   Future<int> insertReservation(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(reservationTable, row);
@@ -87,11 +85,11 @@ class CustomerDatabaseHelper {
     return await db.query(reservationTable);
   }
 
-  Future<Map<String, dynamic>?> getReservationById(int id) async {
+  Future<Map<String, dynamic>?> getCustomerById(int id) async {
     Database db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
-      reservationTable,
-      where: '$columnReservationId = ?',
+      customerTable,
+      where: '$columnCustomerId = ?',
       whereArgs: [id],
     );
     if (maps.isNotEmpty) {
@@ -100,22 +98,11 @@ class CustomerDatabaseHelper {
     return null;
   }
 
-  Future<int> updateReservation(Map<String, dynamic> row) async {
-    Database db = await instance.database;
-    int id = row[columnReservationId];
-    return await db.update(reservationTable, row, where: '$columnReservationId = ?', whereArgs: [id]);
-  }
-
-  Future<int> deleteReservation(int id) async {
-    Database db = await instance.database;
-    return await db.delete(reservationTable, where: '$columnReservationId = ?', whereArgs: [id]);
-  }
-
-  Future<Map<String, dynamic>?> getCustomerById(int id) async {
+  Future<Map<String, dynamic>?> getReservationById(int id) async {
     Database db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
-      customerTable,
-      where: '$columnCustomerId = ?',
+      reservationTable,
+      where: '$columnReservationId = ?',
       whereArgs: [id],
     );
     if (maps.isNotEmpty) {

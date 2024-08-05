@@ -85,6 +85,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
         final encryptedReservation = _encrypt('$reservationName|$selectedCustomer|$selectedFlight');
         await _prefs.setString('previousReservation', encryptedReservation);
 
+        // Assuming you have a method to insert into the database
         final id = await _databaseHelper.insertReservation(reservation);
 
         Navigator.of(context).pop(reservation);

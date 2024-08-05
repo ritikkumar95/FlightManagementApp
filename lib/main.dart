@@ -1,9 +1,10 @@
-import 'package:flight_management_app/reservation/reservation_list_page.dart';
+import 'package:flight_management_app/reservation/reservation_list.dart';
+
 import 'package:flutter/material.dart';
 import 'customer_list/customer_list_page.dart';
 import 'airplane_list/airplane_list_page.dart';
 import 'flights_list/flights_list_page.dart';
-import 'reservation/reservation_page.dart';
+
 
 void main() {
   runApp(MyApp());

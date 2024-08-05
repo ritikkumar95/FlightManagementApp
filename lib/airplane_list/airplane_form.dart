@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 
 import 'airplane.dart';
@@ -29,25 +28,42 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
       _passengers = widget.airplane!.passengers;
       _maxSpeed = widget.airplane!.maxSpeed;
       _range = widget.airplane!.range;
+      print('Editing existing airplane: ${widget.airplane}');
+    } else {
+      _type = '';
+      _passengers = 0;
+      _maxSpeed = 0.0;
+      _range = 0.0;
+      print('Adding new airplane');
     }
   }
 
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+
       final newAirplane = Airplane(
-        id: widget.airplane?.id,
+        id: widget.airplane?.id, // Use the existing ID if editing
         type: _type,
         passengers: _passengers,
         maxSpeed: _maxSpeed,
         range: _range,
       );
-      if (widget.airplane == null) {
-        await DatabaseHelper.instance.insertAirplane(newAirplane);
-      } else {
-        await DatabaseHelper.instance.updateAirplane(newAirplane);
+
+      try {
+        if (widget.airplane == null) {
+          print('Inserting new airplane: $newAirplane');
+          await DatabaseHelper.instance.insertAirplane(newAirplane);
+        } else {
+          print('Updating existing airplane: $newAirplane');
+          await DatabaseHelper.instance.updateAirplane(newAirplane);
+        }
+        Navigator.of(context).pop();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving airplane: $e')),
+        );
       }
-      Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill all fields')),
@@ -56,9 +72,16 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
   }
 
   void _deleteAirplane() async {
-    if (widget.airplane != null) {
-      await DatabaseHelper.instance.deleteAirplane(widget.airplane!.id);
-      Navigator.of(context).pop();
+    if (widget.airplane?.id != null) {
+      try {
+        print('Deleting airplane with ID: ${widget.airplane!.id}');
+        await DatabaseHelper.instance.deleteAirplane(widget.airplane!.id!);
+        Navigator.of(context).pop();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting airplane: $e')),
+        );
+      }
     }
   }
 

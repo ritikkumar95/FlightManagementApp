@@ -1,14 +1,95 @@
 import 'package:flutter/material.dart';
 
-class AirplaneListPage extends StatelessWidget {
+import 'airplane.dart';
+import 'airplane_form.dart';
+import 'database_helper.dart';
+
+class AirplaneListPage extends StatefulWidget {
+  @override
+  _AirplaneListPageState createState() => _AirplaneListPageState();
+}
+
+class _AirplaneListPageState extends State<AirplaneListPage> {
+  late Future<List<Airplane>> _airplanesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAirplanes();
+  }
+
+  void _loadAirplanes() {
+    setState(() {
+      _airplanesFuture = DatabaseHelper.instance.getAirplanes();
+    });
+  }
+
+  void _navigateToFormPage([Airplane? airplane]) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AirplaneFormPage(airplane: airplane),
+      ),
+    ).then((_) => _loadAirplanes());
+  }
+
+  void _showInstructions() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Instructions'),
+          content: Text('Instructions on how to use the interface...'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Airplane List'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info),
+            onPressed: _showInstructions,
+          ),
+        ],
       ),
-      body: Center(
-        child: Text('Airplane List Page Content'),
+      body: FutureBuilder<List<Airplane>>(
+        future: _airplanesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No airplanes available.'));
+          } else {
+            final airplanes = snapshot.data!;
+            return ListView.builder(
+              itemCount: airplanes.length,
+              itemBuilder: (context, index) {
+                final airplane = airplanes[index];
+                return ListTile(
+                  title: Text(airplane.type),
+                  subtitle: Text('Passengers: ${airplane.passengers}'),
+                  onTap: () => _navigateToFormPage(airplane),
+                );
+              },
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToFormPage(),
+        child: Icon(Icons.add),
       ),
     );
   }

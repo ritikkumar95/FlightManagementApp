@@ -1,8 +1,15 @@
+import 'package:flight_management_app/reservation/reservation_list_page.dart';
+
 import 'package:flutter/material.dart';
 import 'customer_list/customer_list_page.dart';
 import 'airplane_list/airplane_list_page.dart';
+<<<<<<< HEAD
+import 'flights_list/flights_list_page.dart';
+
+=======
 import 'flights_list/flight_list_page.dart';
 import 'reservation/reservation_page.dart';
+>>>>>>> main
 
 void main() {
   // Entry point of the application
@@ -45,7 +52,7 @@ class HomePage extends StatelessWidget {
       // Main body content
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             // Button to navigate to Customer List Page
             ElevatedButton(
@@ -65,7 +72,7 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/flightsList');
-              },
+                },
               child: Text('Flights List Page'),
             ),
             // Button to navigate to Reservation Page

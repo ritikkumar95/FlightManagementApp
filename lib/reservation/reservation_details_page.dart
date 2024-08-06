@@ -64,9 +64,11 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               controller: _flightController,
               decoration: InputDecoration(labelText: 'Flight'),
             ),
+            SizedBox(height: 20),
             Text('Customer Name: ${widget.customer?[CustomerDatabaseHelper.columnFirstName] ?? ''} ${widget.customer?[CustomerDatabaseHelper.columnLastName] ?? ''}'),
             Text('Address: ${widget.customer?[CustomerDatabaseHelper.columnAddress] ?? ''}'),
             Text('Birthday: ${widget.customer?[CustomerDatabaseHelper.columnBirthday] ?? ''}'),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _updateReservation,
               child: Text('Update Reservation'),

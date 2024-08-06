@@ -55,9 +55,9 @@ class _AddReservationPageState extends State<AddReservationPage> {
     final customerId = int.tryParse(selectedCustomer.split(' - ')[0]) ?? 0;
 
     final reservation = {
-      'reservationName': reservationName,
-      'customerId': customerId,
-      'flight': selectedFlight,
+      ReservationDatabaseHelper.columnReservationName: reservationName,
+      ReservationDatabaseHelper.columnCustomerIdFk: customerId,
+      ReservationDatabaseHelper.columnFlight: selectedFlight,
     };
 
     try {
@@ -125,7 +125,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
               onPressed: _addReservation,
               child: Text('Add Reservation'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple, // Change button color to purple
+                backgroundColor: Colors.purple,
               ),
             ),
           ],

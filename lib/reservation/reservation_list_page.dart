@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flight_management_app/reservation/reservation_details_page.dart';
+import 'reservation_details_page.dart';
 import '../customer_list/customer_database_helper.dart';
 import 'reservation_database_helper.dart';
 

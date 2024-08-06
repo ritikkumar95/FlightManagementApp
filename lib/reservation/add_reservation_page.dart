@@ -19,6 +19,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
   final _reservationDatabaseHelper = ReservationDatabaseHelper.instance;
   final _customerDatabaseHelper = CustomerDatabaseHelper.instance;
 
+
   List<Map<String, dynamic>> customers = [];
   List<String> flights = [
     'AC 456 - Toronto to Vancouver',

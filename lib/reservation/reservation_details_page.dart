@@ -6,6 +6,7 @@ class ReservationDetailsPage extends StatefulWidget {
   final Map<String, dynamic>? reservation;
   final Map<String, dynamic>? customer;
 
+
   ReservationDetailsPage({this.reservation, this.customer});
 
   @override

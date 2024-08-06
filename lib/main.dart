@@ -1,4 +1,4 @@
-import 'package:flight_management_app/reservation/reservation_list.dart';
+import 'package:flight_management_app/reservation/reservation_list_page.dart';
 
 import 'package:flutter/material.dart';
 import 'customer_list/customer_list_page.dart';
@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             ElevatedButton(
               onPressed: () {

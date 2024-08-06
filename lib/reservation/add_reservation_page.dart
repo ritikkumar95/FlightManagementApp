@@ -102,7 +102,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
               value: selectedCustomer.isEmpty ? null : selectedCustomer,
               items: customers.map((customer) {
                 return DropdownMenuItem<String>(
-                  value: '${customer[CustomerDatabaseHelper.columnCustomerId]} - ${customer[CustomerDatabaseHelper.columnFirstName]} ${customer[CustomerDatabaseHelper.columnLastName]}',
+                  value: '${customer[CustomerDatabaseHelper.columnId]} - ${customer[CustomerDatabaseHelper.columnFirstName]} ${customer[CustomerDatabaseHelper.columnLastName]}',
                   child: Text('${customer[CustomerDatabaseHelper.columnFirstName]} ${customer[CustomerDatabaseHelper.columnLastName]}'),
                 );
               }).toList(),

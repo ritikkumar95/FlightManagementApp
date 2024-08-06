@@ -50,8 +50,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+flutter_intl:
+  enabled: true
 
   assets:
-    - assets/lang/
+    - assets/lang/en_GB.json
+    - assets/lang/en_US.json
+    - assets/images/airplane.jpg
 
 

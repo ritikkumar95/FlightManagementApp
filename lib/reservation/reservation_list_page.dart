@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'add_reservation_page.dart'; // Import the AddReservationPage
+import 'add_reservation_page.dart';
 import 'reservation_details_page.dart';
 import '../customer_list/customer_database_helper.dart';
 import 'reservation_database_helper.dart';

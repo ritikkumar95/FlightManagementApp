@@ -2,6 +2,7 @@ import 'package:flight_management_app/reservation/reservation_list_page.dart';
 import 'package:flutter/material.dart';
 
 import 'airplane_list/airplane_list_page.dart';
+import 'customer_list/customer_list_page.dart';
 import 'flights_list/flight_list_page.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+
       home: HomePage(),
       localizationsDelegates: [
         S.delegate,
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: [
         Locale('en', ''),
-        Locale('yo', ''),
+        Locale('fr', ''),
       ],
       routes: {
         '/customerList': (context) => CustomerListPage(),
@@ -47,36 +49,46 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Flight Management App'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/customerList');
-              },
-              child: Text('Customer List Page'),
+      body: Stack(
+        children: <Widget>[
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/airplane.jpg',
+              fit: BoxFit.cover, // Cover the entire background
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/airplaneList');
-              },
-              child: Text('Airplane List Page'),
+          ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/customerList');
+                  },
+                  child: Text('Customer List Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/airplaneList');
+                  },
+                  child: Text('Airplane List Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/flightsList');
+                  },
+                  child: Text('Flights List Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/reservation');
+                  },
+                  child: Text('Reservation Page'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/flightsList');
-              },
-              child: Text('Flights List Page'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/reservation');
-              },
-              child: Text('Reservation Page'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

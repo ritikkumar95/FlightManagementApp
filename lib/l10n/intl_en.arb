@@ -1,0 +1,8 @@
+{
+  "@@locale": "en",
+  "title": "Flight Management App",
+  "customerList": "Customer List Page",
+  "airplaneList": "Airplane List Page",
+  "flightsList": "Flights List Page",
+  "reservation": "Reservation Page"
+}

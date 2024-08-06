@@ -5,22 +5,14 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-
-
- 
-
-
-  sdk: '3.3.4'
-
-
-
+  sdk: '3.4.4'
 dependencies:
   flutter_localizations:
     sdk: flutter
 
   encrypted_shared_preferences: ^3.0.1
 
-  intl: ^0.18.1
+  intl: ^0.19.0
   cupertino_icons: ^1.0.2
   sqflite: ^2.0.0+4
   path: ^1.8.0
@@ -54,8 +46,8 @@ flutter_intl:
   enabled: true
 
   assets:
-    - lang/en_GB.json
-    - lang/en_fr.json
     - images/airplane.jpg
+
+
 
 

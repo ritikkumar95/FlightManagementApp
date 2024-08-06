@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
+   String _imageSource = 'images/airplane.jpg';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,16 +51,20 @@ class HomePage extends StatelessWidget {
         title: Text('Flight Management App'),
       ),
       body: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Image.asset(
-              'images/airplane.jpg',
-              fit: BoxFit.cover, // Cover the entire background
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage (_imageSource),
+               fit: BoxFit.cover,
+              )
             ),
           ),
+
+
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 ElevatedButton(
                   onPressed: () {

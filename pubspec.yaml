@@ -54,8 +54,8 @@ flutter_intl:
   enabled: true
 
   assets:
-    - assets/lang/en_GB.json
-    - assets/lang/en_US.json
-    - assets/images/airplane.jpg
+    - lang/en_GB.json
+    - lang/en_fr.json
+    - images/airplane.jpg
 
 

@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
         children: <Widget>[
           Positioned.fill(
             child: Image.asset(
-              'assets/images/airplane.jpg',
+              'images/airplane.jpg',
               fit: BoxFit.cover, // Cover the entire background
             ),
           ),

@@ -1,20 +1,21 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../customer_list/customer_database_helper.dart';
 
 class ReservationDatabaseHelper {
-  static final _databaseName = "CustomerDatabase.db";
-  static final _databaseVersion = 1;
-  static final reservationTable = 'reservation';
+  static const _databaseName = "CustomerDatabase.db";
+  static const _databaseVersion = 1;
+  static const reservationTable = 'reservation';
 
   // Column names for the reservation table
-  static final columnReservationId = '_id';
-  static final columnReservationName = 'reservationName';
-  static final columnCustomerIdFk = 'customerIdFk';
-  static final columnFlight = 'flight';
+  static const columnReservationId = '_id';
+  static const columnReservationName = 'reservationName';
+  static const columnCustomerIdFk = 'customerId';
+  static const columnFlight = 'flight';
 
+  // Singleton pattern implementation
   ReservationDatabaseHelper._privateConstructor();
   static final ReservationDatabaseHelper instance = ReservationDatabaseHelper._privateConstructor();
+
   static Database? _database;
 
   Future<Database> get database async {
@@ -23,54 +24,63 @@ class ReservationDatabaseHelper {
     return _database!;
   }
 
-  Future<Database> _initDatabase() async {
-    final path = join(await getDatabasesPath(), _databaseName);
-    return await openDatabase(
-      path,
-      version: _databaseVersion,
-      onCreate: _onCreate,
-    );
+  _initDatabase() async {
+    String path = join(await getDatabasesPath(), _databaseName);
+    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
   }
 
-  Future<void> _onCreate(Database db, int version) async {
+  Future _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $reservationTable (
-        $columnReservationId INTEGER PRIMARY KEY,
+        $columnReservationId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnReservationName TEXT NOT NULL,
         $columnCustomerIdFk INTEGER NOT NULL,
         $columnFlight TEXT NOT NULL,
-        FOREIGN KEY ($columnCustomerIdFk) REFERENCES ${CustomerDatabaseHelper.customerTable}(${CustomerDatabaseHelper.columnCustomerId})
+        FOREIGN KEY ($columnCustomerIdFk) REFERENCES customer (_id)
       )
     ''');
   }
 
-  Future<int> insertReservation(Map<String, dynamic> reservation) async {
-    final db = await database;
-    return await db.insert(reservationTable, reservation);
+  Future<int> insertReservation(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db.insert(reservationTable, row);
   }
 
   Future<List<Map<String, dynamic>>> getAllReservations() async {
-    final db = await database;
+    Database db = await instance.database;
     return await db.query(reservationTable);
   }
 
-  Future<int> updateReservation(Map<String, dynamic> reservation) async {
-    final db = await database;
-    final id = reservation[columnReservationId];
-    return await db.update(
-      reservationTable,
-      reservation,
-      where: '$columnReservationId = ?',
-      whereArgs: [id],
-    );
+  Future<int> updateReservation(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    int id = row[columnReservationId];
+    return await db.update(reservationTable, row, where: '$columnReservationId = ?', whereArgs: [id]);
   }
 
   Future<int> deleteReservation(int id) async {
-    final db = await database;
-    return await db.delete(
+    Database db = await instance.database;
+    return await db.delete(reservationTable, where: '$columnReservationId = ?', whereArgs: [id]);
+  }
+
+  Future<Map<String, dynamic>?> getReservationById(int id) async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
       reservationTable,
       where: '$columnReservationId = ?',
       whereArgs: [id],
+    );
+    if (maps.isNotEmpty) {
+      return maps.first;
+    }
+    return null;
+  }
+
+  Future<List<Map<String, dynamic>>> getReservationsForCustomer(int customerId) async {
+    Database db = await instance.database;
+    return await db.query(
+      reservationTable,
+      where: '$columnCustomerIdFk = ?',
+      whereArgs: [customerId],
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'add_reservation_page.dart'; // Import the AddReservationPage
 import 'reservation_details_page.dart';
 import '../customer_list/customer_database_helper.dart';
 import 'reservation_database_helper.dart';
@@ -40,6 +41,19 @@ class _ReservationListPageState extends State<ReservationListPage> {
     );
   }
 
+  void _navigateToAddReservationPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddReservationPage(
+          onAddReservation: (reservation) {
+            // Handle reservation addition, maybe refresh the list
+            _loadReservations();
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +70,11 @@ class _ReservationListPageState extends State<ReservationListPage> {
             onTap: () => _viewReservationDetails(reservation),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddReservationPage,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.purple, // Change button color if desired
       ),
     );
   }

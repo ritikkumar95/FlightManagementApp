@@ -43,7 +43,6 @@ class _AddReservationPageState extends State<AddReservationPage> {
       customers = customersList;
     });
   }
-
   Future<void> _addReservation() async {
     if (reservationName.isEmpty || selectedCustomer.isEmpty || selectedFlight.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -53,6 +52,13 @@ class _AddReservationPageState extends State<AddReservationPage> {
     }
 
     final customerId = int.tryParse(selectedCustomer.split(' - ')[0]) ?? 0;
+
+    if (customerId == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid customer selected')),
+      );
+      return;
+    }
 
     final reservation = {
       ReservationDatabaseHelper.columnReservationName: reservationName,
@@ -70,6 +76,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +112,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
                 });
               },
             ),
+
             DropdownButton<String>(
               hint: Text('Select Flight'),
               value: selectedFlight.isEmpty ? null : selectedFlight,
@@ -122,10 +130,11 @@ class _AddReservationPageState extends State<AddReservationPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
+
               onPressed: _addReservation,
               child: Text('Add Reservation'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: Colors.purple, // Change button color to purple
               ),
             ),
           ],

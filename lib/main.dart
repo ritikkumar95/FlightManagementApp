@@ -1,18 +1,26 @@
+import 'package:flight_management_app/reservation/reservation_database_helper.dart';
 import 'package:flight_management_app/reservation/reservation_list_page.dart';
 import 'package:flutter/material.dart';
 
 import 'airplane_list/airplane_list_page.dart';
+import 'customer_list/customer_database_helper.dart';
 import 'customer_list/customer_list_page.dart';
 import 'flights_list/flight_list_page.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CustomerDatabaseHelper.instance.database;
+  await ReservationDatabaseHelper.instance.database;
+  runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,45 +29,47 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
 
-      home: HomePage(),
-      localizationsDelegates: [
+      home: const HomePage(),
+      localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [
+      supportedLocales: const [
         Locale('en', ''),
         Locale('fr', ''),
       ],
       routes: {
-        '/customerList': (context) => CustomerListPage(),
-        '/airplaneList': (context) => AirplaneListPage(),
-        '/flightsList': (context) => FlightListPage(),
-        '/reservation': (context) => ReservationListPage(),
+        '/customerList': (context) => const CustomerListPage(),
+        '/airplaneList': (context) => const AirplaneListPage(),
+        '/flightsList': (context) => const FlightListPage(),
+        '/reservation': (context) => const ReservationListPage(),
       },
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-   String _imageSource = 'images/airplane.jpg';
+  const HomePage({super.key});
+
+  //String _imageSource = 'images/airplane.jpg';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flight Management App'),
+        title: const Text('Flight Management App'),
       ),
       body: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage (_imageSource),
-               fit: BoxFit.cover,
-              )
-            ),
-          ),
+          // Container(
+          //   decoration: BoxDecoration(
+          //     image: DecorationImage(
+          //       image: AssetImage (_imageSource),
+          //      fit: BoxFit.cover,
+          //     )
+          //   ),
+          // ),
 
 
           Center(
@@ -70,25 +80,25 @@ class HomePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushNamed(context, '/customerList');
                   },
-                  child: Text('Customer List Page'),
+                  child: const Text('Customer List Page'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/airplaneList');
                   },
-                  child: Text('Airplane List Page'),
+                  child: const Text('Airplane List Page'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/flightsList');
                   },
-                  child: Text('Flights List Page'),
+                  child: const Text('Flights List Page'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/reservation');
                   },
-                  child: Text('Reservation Page'),
+                  child: const Text('Reservation Page'),
                 ),
               ],
             ),

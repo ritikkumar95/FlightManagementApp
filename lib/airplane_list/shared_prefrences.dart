@@ -17,23 +17,18 @@ class SharedPrefsHelper {
     final maxSpeedStr = await _prefs.getString('maxSpeed');
     final rangeStr = await _prefs.getString('range');
 
-    if (type != null &&
-        passengersStr != null &&
-        maxSpeedStr != null &&
-        rangeStr != null) {
-      final passengers = int.tryParse(passengersStr);
-      final maxSpeed = double.tryParse(maxSpeedStr);
-      final range = double.tryParse(rangeStr);
+    final passengers = int.tryParse(passengersStr);
+    final maxSpeed = double.tryParse(maxSpeedStr);
+    final range = double.tryParse(rangeStr);
 
-      if (passengers != null && maxSpeed != null && range != null) {
-        return Airplane(
-          type: type,
-          passengers: passengers,
-          maxSpeed: maxSpeed,
-          range: range,
-        );
-      }
+    if (passengers != null && maxSpeed != null && range != null) {
+      return Airplane(
+        type: type,
+        passengers: passengers,
+        maxSpeed: maxSpeed,
+        range: range,
+      );
     }
-    return null;
+      return null;
   }
 }

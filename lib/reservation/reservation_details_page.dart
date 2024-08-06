@@ -6,7 +6,7 @@ class ReservationDetailsPage extends StatefulWidget {
   final Map<String, dynamic>? reservation;
   final Map<String, dynamic>? customer;
 
-  ReservationDetailsPage({this.reservation, this.customer});
+  const ReservationDetailsPage({super.key, this.reservation, this.customer});
 
   @override
   _ReservationDetailsPageState createState() => _ReservationDetailsPageState();
@@ -21,7 +21,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   void initState() {
     super.initState();
     if (widget.reservation != null) {
-      _reservation = widget.reservation!;
+      _reservation = Map<String, dynamic>.from(widget.reservation!);
       _reservationNameController.text = _reservation[ReservationDatabaseHelper.columnReservationName] ?? '';
       _flightController.text = _reservation[ReservationDatabaseHelper.columnFlight] ?? '';
     } else {
@@ -33,145 +33,122 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     final reservationName = _reservationNameController.text;
     final flight = _flightController.text;
 
-    if (reservationName.isNotEmpty && flight.isNotEmpty) {
-      final reservation = {
-        ReservationDatabaseHelper.columnReservationName: reservationName,
-        ReservationDatabaseHelper.columnFlight: flight,
-        ReservationDatabaseHelper.columnCustomerIdFk: widget.customer?['customerId'], // Ensure this field is present
-      };
-
-      try {
-        if (_reservation.isNotEmpty) {
-          reservation[ReservationDatabaseHelper.columnReservationId] = _reservation[ReservationDatabaseHelper.columnReservationId];
-          final result = await ReservationDatabaseHelper.instance.updateReservation(reservation);
-          print('Update result: $result');
-          if (result > 0) {
-            Navigator.of(context).pop(reservation);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Update failed')),
-            );
-          }
-        } else {
-          final result = await ReservationDatabaseHelper.instance.insertReservation(reservation);
-          print('Insert result: $result');
-          if (result > 0) {
-            Navigator.of(context).pop(reservation);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Insert failed')),
-            );
-          }
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving reservation: $e')),
-        );
-      }
-    } else {
+    if (reservationName.isEmpty || flight.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('All fields must be filled out!')),
+        const SnackBar(content: Text('Please fill out all fields')),
+      );
+      return;
+    }
+
+    _reservation[ReservationDatabaseHelper.columnReservationName] = reservationName;
+    _reservation[ReservationDatabaseHelper.columnFlight] = flight;
+
+    try {
+      if (_reservation[ReservationDatabaseHelper.columnReservationId] == null) {
+        await ReservationDatabaseHelper.instance.insertReservation(_reservation);
+      } else {
+        await ReservationDatabaseHelper.instance.updateReservation(_reservation);
+      }
+      Navigator.of(context).pop();
+    } catch (e) {
+      print('Error saving reservation: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving reservation: $e')),
+      );
+    }
+  }
+
+  Future<void> _updateReservation() async {
+    final reservationName = _reservationNameController.text;
+    final flight = _flightController.text;
+
+    if (reservationName.isEmpty || flight.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill out all fields')),
+      );
+      return;
+    }
+
+    _reservation[ReservationDatabaseHelper.columnReservationName] = reservationName;
+    _reservation[ReservationDatabaseHelper.columnFlight] = flight;
+
+    try {
+      if (_reservation[ReservationDatabaseHelper.columnReservationId] != null) {
+        await ReservationDatabaseHelper.instance.updateReservation(_reservation);
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print('Error updating reservation: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating reservation: $e')),
       );
     }
   }
 
   Future<void> _deleteReservation() async {
-    final reservationId = _reservation[ReservationDatabaseHelper.columnReservationId];
-    if (reservationId != null) {
-      try {
-        final result = await ReservationDatabaseHelper.instance.deleteReservation(reservationId);
-        print('Delete result: $result');
-        if (result > 0) {
-          Navigator.of(context).pop();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Delete failed')),
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting reservation: $e')),
-        );
-      }
+    if (_reservation[ReservationDatabaseHelper.columnReservationId] == null) {
+      return;
     }
-  }
 
-  Future<void> _confirmDeleteReservation() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this reservation?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss dialog
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop(); // Dismiss dialog
-                await _deleteReservation();
-              },
-              child: Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
+    try {
+      await ReservationDatabaseHelper.instance.deleteReservation(_reservation[ReservationDatabaseHelper.columnReservationId]);
+      Navigator.of(context).pop();
+    } catch (e) {
+      print('Error deleting reservation: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting reservation: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final customer = widget.customer;
+    final reservationName = widget.reservation?[ReservationDatabaseHelper.columnReservationName] ?? '';
+    final flight = widget.reservation?[ReservationDatabaseHelper.columnFlight] ?? '';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reservation Details'),
+        title: const Text('Reservation Details'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
+            TextFormField(
               controller: _reservationNameController,
-              decoration: InputDecoration(labelText: 'Reservation Name'),
+              decoration: const InputDecoration(labelText: 'Reservation Name'),
             ),
-            TextField(
+            const SizedBox(height: 10),
+            TextFormField(
               controller: _flightController,
-              decoration: InputDecoration(labelText: 'Flight'),
+              decoration: const InputDecoration(labelText: 'Flight'),
             ),
-            SizedBox(height: 20),
-            if (customer != null) ...[
-              Text('Customer Name: ${customer[CustomerDatabaseHelper.columnFirstName] ?? ''} ${customer[CustomerDatabaseHelper.columnLastName] ?? ''}'),
-              Text('Address: ${customer[CustomerDatabaseHelper.columnAddress] ?? ''}'),
-              Text('Birthday: ${customer[CustomerDatabaseHelper.columnBirthday] ?? ''}'),
-            ] else ...[
-              Text('No customer data available.'),
-            ],
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   onPressed: _saveReservation,
-                  child: Text(_reservation.isNotEmpty ? 'Update Reservation' : 'Add Reservation'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
                   ),
+                  child: const Text('Save'),
                 ),
-                SizedBox(width: 10),
-                if (_reservation.isNotEmpty) ...[
-                  ElevatedButton(
-                    onPressed: _confirmDeleteReservation,
-                    child: Text('Delete Reservation'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
+                ElevatedButton(
+                  onPressed: _updateReservation,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
                   ),
-                ],
+                  child: const Text('Update'),
+                ),
+                ElevatedButton(
+                  onPressed: _deleteReservation,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
+                  child: const Text('Delete'),
+                ),
               ],
             ),
           ],

@@ -5,7 +5,7 @@ import 'reservation_database_helper.dart';
 class AddReservationPage extends StatefulWidget {
   final Function(Map<String, dynamic>) onAddReservation;
 
-  AddReservationPage({required this.onAddReservation});
+  const AddReservationPage({super.key, required this.onAddReservation});
 
   @override
   _AddReservationPageState createState() => _AddReservationPageState();
@@ -38,15 +38,23 @@ class _AddReservationPageState extends State<AddReservationPage> {
   }
 
   Future<void> _loadCustomers() async {
-    final customersList = await _customerDatabaseHelper.getAllCustomers();
-    setState(() {
-      customers = customersList;
-    });
+    try {
+      final customersList = await _customerDatabaseHelper.getAllCustomers();
+      setState(() {
+        customers = customersList;
+      });
+    } catch (e) {
+      print('Error loading customers: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading customers: $e')),
+      );
+    }
   }
+
   Future<void> _addReservation() async {
     if (reservationName.isEmpty || selectedCustomer.isEmpty || selectedFlight.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill out all fields')),
+        const SnackBar(content: Text('Please fill out all fields')),
       );
       return;
     }
@@ -55,7 +63,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
 
     if (customerId == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invalid customer selected')),
+        const SnackBar(content: Text('Invalid customer selected')),
       );
       return;
     }
@@ -71,18 +79,18 @@ class _AddReservationPageState extends State<AddReservationPage> {
       widget.onAddReservation(reservation);
       Navigator.of(context).pop();
     } catch (e) {
+      print('Error adding reservation: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error adding reservation: $e')),
       );
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Reservation'),
+        title: const Text('Add Reservation'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -90,7 +98,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
-              decoration: InputDecoration(labelText: 'Reservation Name'),
+              decoration: const InputDecoration(labelText: 'Reservation Name'),
               onChanged: (value) {
                 setState(() {
                   reservationName = value;
@@ -98,7 +106,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
               },
             ),
             DropdownButton<String>(
-              hint: Text('Select Customer'),
+              hint: const Text('Select Customer'),
               value: selectedCustomer.isEmpty ? null : selectedCustomer,
               items: customers.map((customer) {
                 return DropdownMenuItem<String>(
@@ -112,9 +120,8 @@ class _AddReservationPageState extends State<AddReservationPage> {
                 });
               },
             ),
-
             DropdownButton<String>(
-              hint: Text('Select Flight'),
+              hint: const Text('Select Flight'),
               value: selectedFlight.isEmpty ? null : selectedFlight,
               items: flights.map((flight) {
                 return DropdownMenuItem<String>(
@@ -128,14 +135,13 @@ class _AddReservationPageState extends State<AddReservationPage> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
-
               onPressed: _addReservation,
-              child: Text('Add Reservation'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple, // Change button color to purple
+                backgroundColor: Colors.purple,
               ),
+              child: const Text('Add Reservation'),
             ),
           ],
         ),

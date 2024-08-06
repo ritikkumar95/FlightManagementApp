@@ -5,7 +5,7 @@ import 'customer_database_helper.dart';
 class CustomerDetailPage extends StatefulWidget {
   final Map<String, dynamic> customer; // Customer details passed from the previous page
 
-  CustomerDetailPage({required this.customer});
+  const CustomerDetailPage({super.key, required this.customer});
 
   @override
   _CustomerDetailPageState createState() => _CustomerDetailPageState();
@@ -42,7 +42,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
 
     if (updatedCustomer['_id'] == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: Customer ID is null')),
+        const SnackBar(content: Text('Error: Customer ID is null')),
       );
       return;
     }
@@ -62,7 +62,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Customer Details'),
+        title: const Text('Customer Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -71,22 +71,22 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
             // Input field for first name
             TextField(
               controller: _firstNameController,
-              decoration: InputDecoration(labelText: 'First Name'),
+              decoration: const InputDecoration(labelText: 'First Name'),
             ),
             // Input field for last name
             TextField(
               controller: _lastNameController,
-              decoration: InputDecoration(labelText: 'Last Name'),
+              decoration: const InputDecoration(labelText: 'Last Name'),
             ),
             // Input field for address
             TextField(
               controller: _addressController,
-              decoration: InputDecoration(labelText: 'Address'),
+              decoration: const InputDecoration(labelText: 'Address'),
             ),
             // Input field for birthday
             TextField(
               controller: _birthdayController,
-              decoration: InputDecoration(labelText: 'Birthday'),
+              decoration: const InputDecoration(labelText: 'Birthday'),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -94,12 +94,12 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                 // Button to update customer details
                 ElevatedButton(
                   onPressed: _updateCustomer,
-                  child: Text('Update'),
+                  child: const Text('Update'),
                 ),
                 // Button to delete customer
                 ElevatedButton(
                   onPressed: _deleteCustomer,
-                  child: Text('Delete'),
+                  child: const Text('Delete'),
                 ),
               ],
             ),

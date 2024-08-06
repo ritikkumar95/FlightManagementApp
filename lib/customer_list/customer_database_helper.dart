@@ -28,7 +28,7 @@ class CustomerDatabaseHelper {
   }
 
   // Initialize the database
-  _initDatabase() async {
+  Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), _databaseName);
     return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
   }
@@ -37,7 +37,7 @@ class CustomerDatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $table (
-        $columnId INTEGER PRIMARY KEY,
+        $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnFirstName TEXT NOT NULL,
         $columnLastName TEXT NOT NULL,
         $columnAddress TEXT NOT NULL,
@@ -61,30 +61,27 @@ class CustomerDatabaseHelper {
   // Update a customer in the database
   Future<int> updateCustomer(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    if (row[columnId] == null) {
-      throw ArgumentError('Customer ID is null');
-    }
     int id = row[columnId];
     return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
-  }
-// Get a customer by ID
-  Future<Map<String, dynamic>?> getCustomerById(int id) async {
-    Database db = await instance.database;
-    List<Map<String, dynamic>> result = await db.query(
-      table,
-      where: '$columnId = ?',
-      whereArgs: [id],
-    );
-
-    if (result.isNotEmpty) {
-      return result.first;
-    }
-    return null; // Return null if no customer found
   }
 
   // Delete a customer from the database
   Future<int> deleteCustomer(int id) async {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+  }
+
+  // Retrieve a customer by ID
+  Future<Map<String, dynamic>?> getCustomerById(int id) async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      table,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+    if (maps.isNotEmpty) {
+      return maps.first;
+    }
+    return null;
   }
 }

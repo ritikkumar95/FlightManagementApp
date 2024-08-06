@@ -4,6 +4,8 @@ import 'flight.dart';
 import 'database.dart';
 
 class FlightListPage extends StatefulWidget {
+  const FlightListPage({super.key});
+
   @override
   _FlightListPageState createState() => _FlightListPageState();
 }
@@ -37,8 +39,8 @@ class _FlightListPageState extends State<FlightListPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Instructions'),
-          content: Text(
+          title: const Text('Instructions'),
+          content: const Text(
               '1. Click on the "Add a Flight" button to enter details of a new flight.\n'
                   '2. To view flight details, tap on a flight from the list.\n'
                   '3. On a wide screen, flight details will be shown beside the list of flights.\n'
@@ -46,7 +48,7 @@ class _FlightListPageState extends State<FlightListPage> {
           ),
           actions: [
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -64,10 +66,10 @@ class _FlightListPageState extends State<FlightListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flights List'),
+        title: const Text('Flights List'),
         actions: [
           IconButton(
-            icon: Icon(Icons.help),
+            icon: const Icon(Icons.help),
             onPressed: () => _showInstructions(context),
           ),
         ],
@@ -103,10 +105,10 @@ class _FlightListPageState extends State<FlightListPage> {
               ),
             ).then((_) => _showFlights());
           },
-          child: Text('Add a Flight'),
           style: ElevatedButton.styleFrom(
-            minimumSize: Size(double.infinity, 50),
+            minimumSize: const Size(double.infinity, 50),
           ),
+          child: const Text('Add a Flight'),
         ),
       ),
     );
@@ -153,9 +155,9 @@ class _FlightListPageState extends State<FlightListPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Departure City: ${flight.departureCity} ➔ Destination City: ${flight.destinationCity}'),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text('Departure Time: ${flight.departureTime}'),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text('Arrival Time: ${flight.arrivalTime}'),
                   ],
                 ),

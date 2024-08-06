@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 
 import 'airplane.dart';
 import 'database_helper.dart';
@@ -7,7 +6,7 @@ import 'database_helper.dart';
 class AirplaneFormPage extends StatefulWidget {
   final Airplane? airplane;
 
-  AirplaneFormPage({this.airplane});
+  const AirplaneFormPage({super.key, this.airplane});
 
   @override
   _AirplaneFormPageState createState() => _AirplaneFormPageState();
@@ -66,7 +65,7 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields')),
+        const SnackBar(content: Text('Please fill all fields')),
       );
     }
   }
@@ -93,24 +92,24 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
         actions: [
           if (widget.airplane != null)
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Confirm Delete'),
-                    content: Text('Are you sure you want to delete this airplane?'),
+                    title: const Text('Confirm Delete'),
+                    content: const Text('Are you sure you want to delete this airplane?'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
                       TextButton(
                         onPressed: () {
                           _deleteAirplane();
                           Navigator.of(context).pop();
                         },
-                        child: Text('Delete'),
+                        child: const Text('Delete'),
                       ),
                     ],
                   ),
@@ -120,14 +119,14 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 initialValue: widget.airplane?.type ?? '',
-                decoration: InputDecoration(labelText: 'Type'),
+                decoration: const InputDecoration(labelText: 'Type'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a type';
@@ -140,7 +139,7 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
               ),
               TextFormField(
                 initialValue: widget.airplane?.passengers.toString() ?? '',
-                decoration: InputDecoration(labelText: 'Passengers'),
+                decoration: const InputDecoration(labelText: 'Passengers'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -157,7 +156,7 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
               ),
               TextFormField(
                 initialValue: widget.airplane?.maxSpeed.toString() ?? '',
-                decoration: InputDecoration(labelText: 'Max Speed'),
+                decoration: const InputDecoration(labelText: 'Max Speed'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -174,7 +173,7 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
               ),
               TextFormField(
                 initialValue: widget.airplane?.range.toString() ?? '',
-                decoration: InputDecoration(labelText: 'Range'),
+                decoration: const InputDecoration(labelText: 'Range'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -189,7 +188,7 @@ class _AirplaneFormPageState extends State<AirplaneFormPage> {
                   _range = double.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveForm,
                 child: Text(widget.airplane == null ? 'Add' : 'Update'),

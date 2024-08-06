@@ -5,6 +5,8 @@ import 'customer_database_helper.dart';
 
 // Page for adding a new customer
 class AddCustomerPage extends StatefulWidget {
+  const AddCustomerPage({super.key});
+
   @override
   _AddCustomerPageState createState() => _AddCustomerPageState();
 }
@@ -83,13 +85,13 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         Navigator.of(context).pop(customer); // Return to the previous screen with the added customer
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('All fields must be filled out!')),
+          const SnackBar(content: Text('All fields must be filled out!')),
         );
       }
     } catch (e) {
       print('Error while adding customer: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred while adding the customer.')),
+        const SnackBar(content: Text('An error occurred while adding the customer.')),
       );
     }
   }
@@ -108,7 +110,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Customer'),
+        title: const Text('Add Customer'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -117,22 +119,22 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             // Input field for first name
             TextField(
               controller: _firstNameController,
-              decoration: InputDecoration(labelText: 'First Name'),
+              decoration: const InputDecoration(labelText: 'First Name'),
             ),
             // Input field for last name
             TextField(
               controller: _lastNameController,
-              decoration: InputDecoration(labelText: 'Last Name'),
+              decoration: const InputDecoration(labelText: 'Last Name'),
             ),
             // Input field for address
             TextField(
               controller: _addressController,
-              decoration: InputDecoration(labelText: 'Address'),
+              decoration: const InputDecoration(labelText: 'Address'),
             ),
             // Input field for birthday
             TextField(
               controller: _birthdayController,
-              decoration: InputDecoration(labelText: 'Birthday'),
+              decoration: const InputDecoration(labelText: 'Birthday'),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -140,12 +142,12 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 // Button to submit the form and add a customer
                 ElevatedButton(
                   onPressed: _addCustomer,
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
                 // Button to clear all input fields
                 ElevatedButton(
                   onPressed: _clearFields,
-                  child: Text('Clear'),
+                  child: const Text('Clear'),
                 ),
               ],
             ),

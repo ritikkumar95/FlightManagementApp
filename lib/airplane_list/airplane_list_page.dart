@@ -5,6 +5,8 @@ import 'airplane_form.dart';
 import 'database_helper.dart';
 
 class AirplaneListPage extends StatefulWidget {
+  const AirplaneListPage({super.key});
+
   @override
   _AirplaneListPageState createState() => _AirplaneListPageState();
 }
@@ -37,12 +39,12 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Instructions'),
-          content: Text('Instructions on how to use the interface...'),
+          title: const Text('Instructions'),
+          content: const Text('Instructions on how to use the interface...'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -54,10 +56,10 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Airplane List'),
+        title: const Text('Airplane List'),
         actions: [
           IconButton(
-            icon: Icon(Icons.info),
+            icon: const Icon(Icons.info),
             onPressed: _showInstructions,
           ),
         ],
@@ -66,11 +68,11 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
         future: _airplanesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No airplanes available.'));
+            return const Center(child: Text('No airplanes available.'));
           } else {
             final airplanes = snapshot.data!;
             return ListView.builder(
@@ -89,7 +91,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToFormPage(),
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

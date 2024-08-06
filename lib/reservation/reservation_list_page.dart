@@ -5,14 +5,16 @@ import '../customer_list/customer_database_helper.dart';
 import 'reservation_database_helper.dart';
 
 class ReservationListPage extends StatefulWidget {
+  const ReservationListPage({super.key});
+
   @override
   _ReservationListPageState createState() => _ReservationListPageState();
 }
 
 class _ReservationListPageState extends State<ReservationListPage> {
+  List<Map<String, dynamic>> reservations = [];
   final _reservationDatabaseHelper = ReservationDatabaseHelper.instance;
   final _customerDatabaseHelper = CustomerDatabaseHelper.instance;
-  List<Map<String, dynamic>> reservations = [];
 
   @override
   void initState() {
@@ -21,44 +23,36 @@ class _ReservationListPageState extends State<ReservationListPage> {
   }
 
   Future<void> _loadReservations() async {
-    final reservationsList = await _reservationDatabaseHelper.getAllReservations();
-    setState(() {
-      reservations = reservationsList;
-    });
+    try {
+      final reservationsList = await _reservationDatabaseHelper.getAllReservations();
+      setState(() {
+        reservations = reservationsList;
+      });
+    } catch (e) {
+      print('Error loading reservations: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading reservations: $e')),
+      );
+    }
   }
 
-  void _viewReservationDetails(Map<String, dynamic> reservation) async {
-    final customerId = reservation[ReservationDatabaseHelper.columnCustomerIdFk];
-    final customer = await _customerDatabaseHelper.getCustomerById(customerId);
-
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ReservationDetailsPage(
-          reservation: reservation,
-          customer: customer,
-        ),
-      ),
-    );
-  }
-
-  void _navigateToAddReservationPage() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => AddReservationPage(
-          onAddReservation: (reservation) {
-            // Handle reservation addition, maybe refresh the list
-            _loadReservations();
-          },
-        ),
-      ),
-    );
+  Future<void> _deleteReservation(int id) async {
+    try {
+      await _reservationDatabaseHelper.deleteReservation(id);
+      _loadReservations();
+    } catch (e) {
+      print('Error deleting reservation: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting reservation: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reservation List'),
+        title: const Text('Reservations List'),
       ),
       body: ListView.builder(
         itemCount: reservations.length,
@@ -66,15 +60,46 @@ class _ReservationListPageState extends State<ReservationListPage> {
           final reservation = reservations[index];
           return ListTile(
             title: Text(reservation[ReservationDatabaseHelper.columnReservationName]),
-            subtitle: Text('Flight: ${reservation[ReservationDatabaseHelper.columnFlight]}'),
-            onTap: () => _viewReservationDetails(reservation),
+            subtitle: FutureBuilder(
+              future: _customerDatabaseHelper.getCustomerById(reservation[ReservationDatabaseHelper.columnCustomerIdFk]),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return const Text('Error loading customer');
+                  }
+                  final customer = snapshot.data as Map<String, dynamic>?;
+                  return customer != null
+                      ? Text('${customer[CustomerDatabaseHelper.columnFirstName]} ${customer[CustomerDatabaseHelper.columnLastName]}')
+                      : const Text('Customer not found');
+                } else {
+                  return const Text('Loading...');
+                }
+              },
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () => _deleteReservation(reservation[ReservationDatabaseHelper.columnReservationId]),
+            ),
+            onTap: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReservationDetailsPage(reservation: reservation),
+                ),
+              );
+              _loadReservations();
+            },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToAddReservationPage,
-        child: Icon(Icons.add),
-        backgroundColor: Colors.purple, // Change button color if desired
+        onPressed: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddReservationPage(onAddReservation: (reservation) => _loadReservations()),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

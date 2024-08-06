@@ -9,7 +9,7 @@ class FlightDetailsPage extends StatefulWidget {
   final Function? onUpdate;
   final Function? onAdd;
 
-  FlightDetailsPage({this.flight, this.onDelete, this.onUpdate, this.onAdd});
+  const FlightDetailsPage({super.key, this.flight, this.onDelete, this.onUpdate, this.onAdd});
 
   @override
   _FlightDetailsPageState createState() => _FlightDetailsPageState();
@@ -82,7 +82,7 @@ class _FlightDetailsPageState extends State<FlightDetailsPage> {
       Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a value for all fields')),
+        const SnackBar(content: Text('Please enter a value for all fields')),
       );
     }
   }
@@ -103,16 +103,16 @@ class _FlightDetailsPageState extends State<FlightDetailsPage> {
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text('Delete'),
-        content: Text('Are you sure you want to delete this flight?'),
+        title: const Text('Delete'),
+        content: const Text('Are you sure you want to delete this flight?'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop('Cancel'),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop('Delete'),
-            child: Text('Delete'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -123,7 +123,7 @@ class _FlightDetailsPageState extends State<FlightDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flight Details'),
+        title: const Text('Flight Details'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -132,33 +132,33 @@ class _FlightDetailsPageState extends State<FlightDetailsPage> {
           children: [
             TextField(
               controller: _departureCityController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Departure City',
               ),
               onChanged: (text) => _saveText('departureCity', text),
             ),
             TextField(
               controller: _destinationCityController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Destination City',
               ),
               onChanged: (text) => _saveText('destinationCity', text),
             ),
             TextField(
               controller: _departureTimeController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Departure Time',
               ),
               onChanged: (text) => _saveText('departureTime', text),
             ),
             TextField(
               controller: _arrivalTimeController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Arrival Time',
               ),
               onChanged: (text) => _saveText('arrivalTime', text),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -169,7 +169,7 @@ class _FlightDetailsPageState extends State<FlightDetailsPage> {
                 if (widget.flight != null)
                   ElevatedButton(
                     onPressed: _onDelete,
-                    child: Text('Delete Flight'),
+                    child: const Text('Delete Flight'),
                   ),
               ],
             ),

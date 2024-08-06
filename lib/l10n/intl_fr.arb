@@ -1,8 +1,12 @@
 {
   "@@locale": "fr",
-  "title": "Application de gestion des vols",
-  "customerList": "Page de la liste des clients",
-  "airplaneList": "Page de la liste des avions",
-  "flightsList": "Page de la liste des vols",
-  "reservation": "Page des réservations"
+  "appTitle": "Application de Gestion des Vols",
+  "customerListPage": "Liste des Clients",
+  "airplaneListPage": "Liste des Avions",
+  "flightsListPage": "Liste des Vols",
+  "reservationPage": "Page de Réservation",
+  "errorFillFields": "Veuillez remplir tous les champs",
+  "errorSaving": "Erreur lors de l'enregistrement de la réservation : {error}",
+  "errorUpdating": "Erreur lors de la mise à jour de la réservation : {error}",
+  "errorDeleting": "Erreur lors de la suppression de la réservation : {error}"
 }

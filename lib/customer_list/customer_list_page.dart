@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'add_customer_page.dart';
 import 'customer_detail_page.dart';
 import 'customer_database_helper.dart';
 
 // Page for displaying and managing the list of customers
 class CustomerListPage extends StatefulWidget {
+  const CustomerListPage({super.key});
+
   @override
   _CustomerListPageState createState() => _CustomerListPageState();
 }
@@ -32,24 +33,24 @@ class _CustomerListPageState extends State<CustomerListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Customer List'),
+        title: const Text('Customer List'),
         actions: [
           // Info button to show instructions
           IconButton(
-            icon: Icon(Icons.info),
+            icon: const Icon(Icons.info),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text('Instructions'),
-                    content: Text('Manage your customer list by adding, updating, or deleting customers.'),
+                    title: const Text('Instructions'),
+                    content: const Text('Manage your customer list by adding, updating, or deleting customers.'),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('OK'),
+                        child: const Text('OK'),
                       ),
                     ],
                   );
@@ -66,7 +67,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
             onPressed: () async {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddCustomerPage()),
+                MaterialPageRoute(builder: (context) => const AddCustomerPage()),
               );
               if (result != null) {
                 setState(() {
@@ -74,7 +75,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
                 });
               }
             },
-            child: Text('Add Customer'),
+            child: const Text('Add Customer'),
           ),
           Expanded(
             // List view to display the list of customers

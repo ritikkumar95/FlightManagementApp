@@ -1,8 +1,12 @@
 {
   "@@locale": "en",
-  "title": "Flight Management App",
-  "customerList": "Customer List Page",
-  "airplaneList": "Airplane List Page",
-  "flightsList": "Flights List Page",
-  "reservation": "Reservation Page"
+  "appTitle": "Flight Management App",
+  "customerListPage": "Customer List Page",
+  "airplaneListPage": "Airplane List Page",
+  "flightsListPage": "Flights List Page",
+  "reservationPage": "Reservation Page",
+  "errorFillFields": "Please fill out all fields",
+  "errorSaving": "Error saving reservation: {error}",
+  "errorUpdating": "Error updating reservation: {error}",
+  "errorDeleting": "Error deleting reservation: {error}"
 }

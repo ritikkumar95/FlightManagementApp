@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
+import '../customer_list/customer_database_helper.dart';
 class ReservationDatabaseHelper {
   static final _databaseName = "CustomerDatabase.db";
   static final _databaseVersion = 1;
@@ -30,13 +30,14 @@ class ReservationDatabaseHelper {
   }
 
   Future _onCreate(Database db, int version) async {
+    // Ensure customer table exists before creating reservation table
     await db.execute('''
       CREATE TABLE $reservationTable (
-        $columnReservationId INTEGER PRIMARY KEY,
+        $columnReservationId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnReservationName TEXT NOT NULL,
         $columnCustomerIdFk INTEGER NOT NULL,
         $columnFlight TEXT NOT NULL,
-        FOREIGN KEY ($columnCustomerIdFk) REFERENCES customer (_id)
+        FOREIGN KEY ($columnCustomerIdFk) REFERENCES customer ($columnCustomerIdFk)
       )
     ''');
   }

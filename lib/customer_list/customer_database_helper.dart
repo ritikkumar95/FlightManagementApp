@@ -33,7 +33,7 @@ class CustomerDatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $customerTable (
-        $columnCustomerId INTEGER PRIMARY KEY,
+        $columnCustomerId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnFirstName TEXT NOT NULL,
         $columnLastName TEXT NOT NULL,
         $columnAddress TEXT NOT NULL,

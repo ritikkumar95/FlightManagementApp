@@ -60,9 +60,15 @@ class _AddReservationPageState extends State<AddReservationPage> {
       'flight': selectedFlight,
     };
 
-    await _reservationDatabaseHelper.insertReservation(reservation);
-    widget.onAddReservation(reservation);
-    Navigator.of(context).pop();
+    try {
+      await _reservationDatabaseHelper.insertReservation(reservation);
+      widget.onAddReservation(reservation);
+      Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding reservation: $e')),
+      );
+    }
   }
 
   @override
@@ -74,6 +80,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               decoration: InputDecoration(labelText: 'Reservation Name'),
@@ -117,6 +124,9 @@ class _AddReservationPageState extends State<AddReservationPage> {
             ElevatedButton(
               onPressed: _addReservation,
               child: Text('Add Reservation'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple, // Change button color to purple
+              ),
             ),
           ],
         ),

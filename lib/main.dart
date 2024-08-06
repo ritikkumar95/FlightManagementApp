@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/flightsList');
-              },
+                },
               child: Text('Flights List Page'),
             ),
             // Button to navigate to Reservation Page

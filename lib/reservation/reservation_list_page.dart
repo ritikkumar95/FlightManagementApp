@@ -9,7 +9,6 @@ class ReservationListPage extends StatefulWidget {
   _ReservationListPageState createState() => _ReservationListPageState();
 }
 
-
 class _ReservationListPageState extends State<ReservationListPage> {
   final _reservationDatabaseHelper = ReservationDatabaseHelper.instance;
   final _customerDatabaseHelper = CustomerDatabaseHelper.instance;

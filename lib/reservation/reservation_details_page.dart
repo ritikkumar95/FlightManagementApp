@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../customer_list/customer_database_helper.dart';
 import 'reservation_database_helper.dart';
 
-
 class ReservationDetailsPage extends StatefulWidget {
   final Map<String, dynamic>? reservation;
   final Map<String, dynamic>? customer;
